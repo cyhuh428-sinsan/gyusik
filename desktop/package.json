@@ -1,7 +1,7 @@
 {
   "name": "gyusik-desktop",
   "productName": "규식이",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "규식이: 한국어로 정규식을 배우고, 만들고, 테스트하는 도구 (Windows 설치형)",
   "main": "main.js",
   "author": "cyhuh428-sinsan",
