@@ -111,6 +111,71 @@ function paintText() {
 
 // ---------- panels ----------
 
+// ---- railroad diagram: zoom buttons, Ctrl+wheel, fit, drag to pan (the scale is remembered on this device)
+const RR_MIN = 0.1, RR_MAX = 2;
+let rrScale = 1;
+try { let z = parseFloat(localStorage.getItem("gyusik.rrzoom")); if (z >= RR_MIN && z <= RR_MAX) { rrScale = z; } } catch (e) {}
+
+function applyRrScale() {
+	let line = $("rr").querySelector(".rr-line");
+	if (line) { line.style.zoom = rrScale; }
+	$("rrPct").textContent = Math.round(rrScale * 100) + "%";
+	$("rrOut").disabled = rrScale <= RR_MIN + 0.001;
+	$("rrIn").disabled = rrScale >= RR_MAX - 0.001;
+}
+
+function setRrScale(z) {
+	rrScale = Math.min(RR_MAX, Math.max(RR_MIN, Math.round(z * 100) / 100));
+	try { localStorage.setItem("gyusik.rrzoom", String(rrScale)); } catch (e) {}
+	applyRrScale();
+}
+
+// the largest scale (at most 100%) at which the whole diagram fits the box
+function fitRr() {
+	let host = $("rr"), line = host.querySelector(".rr-line");
+	if (!line) { return; }
+	line.style.zoom = 1;
+	let cs = getComputedStyle(host);
+	let aw = host.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+	let ah = host.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+	setRrScale(Math.min(1, aw / line.scrollWidth, ah / line.scrollHeight));
+}
+
+$("rrOut").onclick = () => setRrScale(rrScale / 1.2);
+$("rrIn").onclick = () => setRrScale(rrScale * 1.2);
+$("rrPct").onclick = () => setRrScale(1);
+$("rrFit").onclick = fitRr;
+$("rr").addEventListener("wheel", (e) => {
+	if (!e.ctrlKey && !e.metaKey) { return; } // plain wheel keeps scrolling the diagram / the page
+	e.preventDefault();
+	setRrScale(rrScale * (e.deltaY < 0 ? 1.1 : 1 / 1.1));
+}, {passive: false});
+$("rr").addEventListener("keydown", (e) => {
+	if (e.target !== $("rr") || e.ctrlKey || e.metaKey || e.altKey) { return; }
+	if (e.key === "+" || e.key === "=") { setRrScale(rrScale * 1.2); e.preventDefault(); }
+	else if (e.key === "-") { setRrScale(rrScale / 1.2); e.preventDefault(); }
+	else if (e.key === "0") { setRrScale(1); e.preventDefault(); }
+});
+{
+	let host = $("rr"), drag = null;
+	host.addEventListener("pointerdown", (e) => {
+		if (e.button !== 0 || e.pointerType === "touch") { return; } // touch already scrolls natively
+		drag = {x: e.clientX, y: e.clientY, left: host.scrollLeft, top: host.scrollTop, moved: false};
+	});
+	window.addEventListener("pointermove", (e) => {
+		if (!drag) { return; }
+		let dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+		if (!drag.moved && Math.abs(dx) + Math.abs(dy) < 4) { return; }
+		drag.moved = true;
+		host.classList.add("pan");
+		host.scrollLeft = drag.left - dx;
+		host.scrollTop = drag.top - dy;
+	});
+	const stop = () => { drag = null; host.classList.remove("pan"); };
+	window.addEventListener("pointerup", stop);
+	window.addEventListener("pointercancel", stop);
+}
+
 function paintFlags() {
 	let host = $("flags");
 	host.textContent = "";
@@ -225,6 +290,7 @@ function render() {
 	diags = sortDiagnostics(diagnose(model, fm, state.engine));
 	$("summary").textContent = summary(model, fm);
 	renderRailroad($("rr"), model, fm);
+	applyRrScale();
 	paintPattern();
 	paintSide();
 	paintFlags();
@@ -370,6 +436,7 @@ $("toolCopy").onclick = () => {
 
 function showView(v) {
 	state.view = v;
+	$("viewRr").hidden = v !== "rr";
 	$("viewText").hidden = v !== "text";
 	$("viewTests").hidden = v !== "tests";
 	$("viewTool").hidden = !(v === "replace" || v === "list");

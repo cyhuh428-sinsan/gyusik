@@ -52,19 +52,28 @@
 			</div>
 			</div>
 		</div>
-		<div class="pane">
-			<div class="label">선로도 <span class="hint">구조를 그림으로 보여줍니다. 마우스를 올리면 패턴·설명·결과가 함께 강조됩니다.</span></div>
-			<div class="rr" id="rr"></div>
-		</div>
 		<div class="pane grow">
 			<div class="label">
 				<span class="seg" role="tablist" aria-label="테스트 방식">
+					<button class="segb" type="button" role="tab" data-view="rr">선로도</button>
 					<button class="segb on" type="button" role="tab" data-view="text">테스트 텍스트</button>
 					<button class="segb" type="button" role="tab" data-view="tests">테스트 케이스 <span class="badge" id="bTests">0</span></button>
 					<button class="segb" type="button" role="tab" data-view="replace">치환</button>
 					<button class="segb" type="button" role="tab" data-view="list">추출</button>
 				</span>
 				<span class="count" id="count"></span>
+			</div>
+			<div id="viewRr" hidden>
+				<div class="rrhead">
+					<span class="hint">구조를 그림으로 보여줍니다. 마우스를 올리면 패턴·설명·결과가 함께 강조됩니다.</span>
+					<div class="rrzoom" role="group" aria-label="선로도 배율">
+						<button type="button" class="send" id="rrOut" title="축소 (Ctrl + 휠 아래로)" aria-label="축소">−</button>
+						<button type="button" class="send" id="rrPct" title="100%로 되돌리기" aria-label="배율 100%로">100%</button>
+						<button type="button" class="send" id="rrIn" title="확대 (Ctrl + 휠 위로)" aria-label="확대">+</button>
+						<button type="button" class="send" id="rrFit" title="그림 전체가 보이도록 맞춤">맞춤</button>
+					</div>
+				</div>
+				<div class="rr" id="rr" tabindex="0" aria-label="선로도 (드래그로 이동, Ctrl+휠로 배율)"></div>
 			</div>
 			<div id="viewText">
 			<div class="editor text" id="txtEditor">
