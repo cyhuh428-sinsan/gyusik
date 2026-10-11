@@ -1,0 +1,8 @@
+규식이 (Gyusik) - 소스 코드와 라이선스
+
+이 프로그램은 GNU General Public License v3.0 으로 배포됩니다. (LICENSE 파일 참조)
+RegExr (Copyright (C) 2017 gskinner.com, inc.)를 바탕으로 만든 수정판입니다. 수정 내역은 NOTICE.md 에 있습니다.
+
+소스 코드: https://github.com/sinsan-develop/regexr
+이 설치 파일에 해당하는 소스는 저장소의 같은 버전에서 받을 수 있습니다.
+Electron 및 Chromium의 라이선스는 설치 폴더의 LICENSES.chromium.html 에 있습니다.

@@ -1,0 +1,12 @@
+# No host port is published: the reverse proxy (Nginx Proxy Manager) reaches the container by name on proxy-network.
+services:
+  gyusik-site:
+    build: .
+    container_name: gyusik-site
+    restart: unless-stopped
+    networks:
+      - proxy-network
+
+networks:
+  proxy-network:
+    external: true

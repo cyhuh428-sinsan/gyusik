@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<!--
+	규식이 (Gyusik) - https://github.com/sinsan-develop/regexr
+	Based on RegExr, Copyright (C) 2017 gskinner.com, inc. Licensed under GPL-3.0. See NOTICE.md.
+-->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>규식이: 정규식 작업대</title>
+<meta name="pcre-worker" content="<%= gyusik_pcre %>">
+<link rel="stylesheet" href="<%= gyusik_css %>">
+</head>
+<body>
+<header class="top">
+	<span class="logo">규식이</span>
+	<nav class="modes" aria-label="모드">
+		<button class="mode on" type="button" data-mode="bench">작업대</button>
+		<button class="mode" type="button" data-mode="make">만들기</button>
+		<button class="mode" type="button" data-mode="learn">배우기</button>
+		<button class="mode" type="button" data-mode="mine">내 패턴</button>
+	</nav>
+	<span class="spacer"></span>
+	<label class="engine">엔진
+		<select id="engine">
+			<option value="js">JavaScript</option>
+			<option value="pcre">PCRE2</option>
+		</select>
+	</label>
+	<button type="button" class="gear" id="openSettings" title="설정" aria-label="설정">설정</button>
+	<span class="status-chip" id="net" title="한국어 문장으로 만들기만 인터넷이 필요합니다">오프라인 사용 가능</span>
+</header>
+
+<main class="wb">
+	<section class="left">
+		<div class="pane">
+			<div class="label">패턴</div>
+			<div class="editor" id="patEditor">
+				<pre class="mirror" id="patMirror" aria-hidden="true"></pre>
+				<textarea id="pattern" spellcheck="false" autocomplete="off" autocapitalize="off" rows="1" aria-label="정규식 패턴"></textarea>
+			</div>
+			<div class="flags" id="flags" role="group" aria-label="플래그"></div>
+			<div class="summary" id="summary" aria-live="polite"></div>
+			<div class="saverow">
+				<input id="saveName" type="text" placeholder="이름 (예: 휴대폰 번호)" aria-label="저장할 이름" maxlength="100">
+				<input id="saveTags" type="text" placeholder="태그 (쉼표로 구분)" aria-label="태그">
+				<button id="saveBtn" type="button" class="send">저장</button>
+				<button id="saveNew" type="button" class="send" hidden>새로 저장</button>
+				<span id="saveMsg" class="muted" aria-live="polite"></span>
+			</div>
+		</div>
+		<div class="pane">
+			<div class="label">선로도 <span class="hint">구조를 그림으로 보여줍니다. 마우스를 올리면 패턴·설명·결과가 함께 강조됩니다.</span></div>
+			<div class="rr" id="rr"></div>
+		</div>
+		<div class="pane">
+			<div class="label">
+				<span class="seg" role="tablist" aria-label="테스트 방식">
+					<button class="segb on" type="button" role="tab" data-view="text">테스트 텍스트</button>
+					<button class="segb" type="button" role="tab" data-view="tests">테스트 케이스 <span class="badge" id="bTests">0</span></button>
+					<button class="segb" type="button" role="tab" data-view="replace">치환</button>
+					<button class="segb" type="button" role="tab" data-view="list">추출</button>
+				</span>
+				<span class="count" id="count"></span>
+			</div>
+			<div id="viewText">
+			<div class="editor text" id="txtEditor">
+				<pre class="mirror" id="txtMirror" aria-hidden="true"></pre>
+				<textarea id="text" spellcheck="false" aria-label="테스트 텍스트"></textarea>
+			</div>
+			</div>
+			<div id="viewTool" hidden>
+				<p class="hint" id="toolHint"></p>
+				<input id="toolInput" type="text" spellcheck="false" autocomplete="off" aria-label="치환 또는 추출 형식">
+				<div class="fieldrow"><span class="fld" id="toolOutLabel">결과</span><button type="button" class="send" id="toolCopy">복사</button><span id="toolMsg" class="muted" aria-live="polite"></span></div>
+				<pre class="toolout" id="toolOut" aria-live="polite"></pre>
+			</div>
+			<div id="viewTests" hidden>
+				<p class="hint">정규식이 <b>일치해야 하는</b> 예와 <b>일치하면 안 되는</b> 예를 적어 두면, 패턴을 고칠 때마다 바로 통과 여부를 알려줍니다.</p>
+				<div id="tests"></div>
+				<button type="button" class="add" id="addTest">+ 케이스 추가</button>
+			</div>
+			<div class="banner" id="nfd" hidden>
+				<span>자모가 분리된 한글(NFD)이 있습니다. Mac에서 복사한 글자는 이렇게 저장되어 <code>[가-힣]</code> 에 걸리지 않을 수 있습니다.</span>
+				<button type="button" id="nfdFix">일반 한글로 바꾸기</button>
+			</div>
+			<div class="banner err" id="runError" hidden></div>
+		</div>
+	</section>
+	<aside class="side">
+		<div class="tabs" role="tablist">
+			<button class="tab on" role="tab" data-tab="explain" type="button">설명</button>
+			<button class="tab" role="tab" data-tab="diag" type="button">진단 <span class="badge" id="bDiag">0</span></button>
+			<button class="tab" role="tab" data-tab="tips" type="button">추천 <span class="badge" id="bTips">0</span></button>
+			<button class="tab" role="tab" data-tab="ref" type="button">레퍼런스</button>
+		</div>
+		<div class="panel" id="panel" role="tabpanel"></div>
+	</aside>
+</main>
+
+<main class="mk" id="makeView" hidden>
+	<section class="pane">
+		<div class="label">
+			<span class="seg" role="tablist" aria-label="만드는 방법">
+				<button class="segb on" type="button" role="tab" id="mkTabEx">예시로 만들기</button>
+				<button class="segb" type="button" role="tab" id="mkTabNl">한국어 문장으로 만들기 <span class="chip online">온라인</span></button>
+			</span>
+		</div>
+		<div id="mkNl" hidden>
+			<label class="fld" for="nlSentence">만들고 싶은 패턴을 문장으로 쓰세요</label>
+			<textarea id="nlSentence" class="lines" spellcheck="false" rows="3" placeholder="010으로 시작하고 하이픈으로 나뉜 휴대폰 번호"></textarea>
+			<p class="hint">아래 예시 칸에 적은 예시도 함께 보내면 더 정확합니다.</p>
+			<div class="sendbox" id="nlSend"></div>
+			<div class="fieldrow"><span id="nlModel" class="muted"></span><button type="button" class="linkbtn" id="nlToSettings">설정</button></div>
+			<div class="banner" id="nlWarn" hidden></div>
+			<div class="fieldrow"><button type="button" class="primary" id="nlGo">AI로 만들기</button><span id="nlStatus" class="muted" aria-live="polite"></span></div>
+		</div>
+		<div id="mkEx"><span class="hint">맞아야 할 문자열과 틀려야 할 문자열을 한 줄에 하나씩 적으세요. 붙여넣기도 됩니다.</span></div>
+		<label class="fld" for="mkPos">일치해야 할 예시</label>
+		<textarea id="mkPos" class="lines" spellcheck="false" rows="6" placeholder="2026-10-11&#10;2025-01-31"></textarea>
+		<label class="fld" for="mkNeg">일치하면 안 될 예시</label>
+		<textarea id="mkNeg" class="lines" spellcheck="false" rows="6" placeholder="2026-13-01&#10;26-10-11"></textarea>
+		<div id="mkExGo"><button type="button" class="primary" id="mkGo">후보 만들기</button></div>
+		<p class="hint">이 예시는 작업대의 테스트 케이스와 같은 데이터입니다. 후보를 작업대로 보내면 예시도 함께 갑니다.</p>
+	</section>
+	<section class="pane">
+		<div class="label" id="mkCount">후보</div>
+		<div id="mkList"><p class="empty">예시를 넣고 [후보 만들기]를 누르면 후보가 나옵니다.</p></div>
+	</section>
+</main>
+<main class="ln" id="learnView" hidden>
+	<nav class="pane lnnav" id="lnNav" aria-label="강의 목록"></nav>
+	<article class="pane lnbody" id="lnBody"></article>
+</main>
+<main class="my" id="myView" hidden>
+	<section class="pane">
+		<div class="label">내 패턴 <span class="count" id="myCount"></span></div>
+		<div class="fieldrow">
+			<input id="mySearch" type="search" placeholder="이름, 태그, 패턴으로 검색" aria-label="검색">
+			<button type="button" class="send" id="myExport">모두 내보내기</button>
+			<button type="button" class="send" id="myImport">가져오기</button>
+			<input type="file" id="myFile" accept=".json,application/json" hidden>
+		</div>
+		<p class="hint">이 기기의 브라우저에 저장됩니다. 다른 PC로 옮기거나 백업하려면 내보내기로 파일을 만드세요. 브라우저 데이터를 지우면 저장한 패턴도 사라집니다.</p>
+		<div class="banner" id="myMsg" hidden></div>
+		<div id="myList"></div>
+	</section>
+</main>
+<main class="st" id="settingsView" hidden>
+	<section class="pane">
+		<div class="label">AI 연결 <span class="hint">한국어 문장으로 정규식을 만들 때만 씁니다. 다른 기능은 인터넷 없이 동작합니다.</span></div>
+		<label class="fld" for="setProvider">제공자</label>
+		<select id="setProvider"></select>
+		<label class="fld" for="setProtocol">방식</label>
+		<select id="setProtocol"><option value="openai">OpenAI 호환 (/chat/completions)</option><option value="anthropic">Anthropic 호환 (/v1/messages)</option></select>
+		<label class="fld" for="setBase">서버 주소</label>
+		<input id="setBase" type="text" spellcheck="false" autocomplete="off">
+		<label class="fld" for="setKey">API 키</label>
+		<input id="setKey" type="password" spellcheck="false" autocomplete="off">
+		<label class="chk"><input type="checkbox" id="setSaveKey"> 이 기기에 저장 <span class="hint">브라우저 저장소에 암호화 없이 저장됩니다. 공용 PC에서는 끄세요. 끄면 탭을 닫을 때까지만 기억합니다.</span></label>
+		<div class="fieldrow"><button type="button" class="primary" id="setCheck">연결 확인</button><span id="setStatus" class="muted" aria-live="polite"></span></div>
+		<label class="fld" for="setModel">모델 <span class="hint">연결 확인 후 목록에서 고르거나 직접 입력하세요.</span></label>
+		<input id="setModel" type="text" list="setModels" spellcheck="false" autocomplete="off">
+		<datalist id="setModels"></datalist>
+		<label class="fld" for="setEffort">추론 등급</label>
+		<select id="setEffort"></select>
+		<p class="hint" id="setEffortNote"></p>
+	</section>
+	<section class="pane">
+		<div class="label">보내는 내용과 보내지 않는 내용</div>
+		<ul class="plain">
+			<li><b>보냄:</b> 문장, 엔진 이름, 예시 칸에 적은 예시 문자열</li>
+			<li><b>보내지 않음:</b> 작업대의 테스트 텍스트, 저장한 패턴, 테스트 케이스</li>
+			<li><b>키:</b> 이 기기에서 입력한 서버로만 전송됩니다. 규식이 서버를 거치지 않습니다.</li>
+		</ul>
+		<div class="label">관리자</div>
+		<label class="chk"><input type="checkbox" id="setBlock"> 외부 통신 완전 차단 <span class="hint">켜면 AI 기능이 꺼지고 어떤 요청도 보내지 않습니다. 폐쇄망 보안 심사용입니다.</span></label>
+		<div><button type="button" class="send" id="setBack">작업대로 돌아가기</button></div>
+	</section>
+</main>
+<footer class="statusbar" id="statusbar"></footer>
+<script src="<%= gyusik_js %>"></script>
+</body>
+</html>
