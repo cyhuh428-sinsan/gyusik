@@ -157,6 +157,12 @@ input:focus, select:focus, .lines:focus { border-color: var(--accent); outline: 
 .rr { display: flex; box-sizing: border-box; flex: 1; min-height: 0; overflow: auto; padding: 18px 4px 8px; cursor: grab; overscroll-behavior: contain; }
 .rr > .rr-line { margin: auto; }
 .rr.pan { cursor: grabbing; user-select: none; }
+.rrdialog { width: 100vw; height: 100vh; max-width: none; max-height: none; margin: 0; padding: var(--gutter); border: 0; background: var(--bg); color: var(--ink); }
+.rrdialog[open] { display: flex; flex-direction: column; gap: 12px; }
+.rrdialog::backdrop { background: rgba(0, 0, 0, .6); }
+.rrdhead { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 18px; }
+.rrdhead .rrzoom { margin-left: auto; }
+.rrdialog .rr { flex: 1; min-height: 0; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
 .lnex .rr { display: block; height: auto; overflow-x: auto; overflow-y: hidden; cursor: auto; }
 .lnex .rr > .rr-line { margin: 0; }
 .rr .empty { padding: 24px 0; text-align: left; }

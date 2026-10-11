@@ -71,6 +71,7 @@
 						<button type="button" class="send" id="rrPct" title="100%로 되돌리기" aria-label="배율 100%로">100%</button>
 						<button type="button" class="send" id="rrIn" title="확대 (Ctrl + 휠 위로)" aria-label="확대">+</button>
 						<button type="button" class="send" id="rrFit" title="그림 전체가 보이도록 맞춤">맞춤</button>
+						<button type="button" class="send" id="rrFull" title="전체 화면으로 크게 보기" aria-haspopup="dialog">전체화면</button>
 					</div>
 				</div>
 				<div class="rr" id="rr" tabindex="0" aria-label="선로도 (드래그로 이동, Ctrl+휠로 배율)"></div>
@@ -191,6 +192,20 @@
 	</section>
 </main>
 <footer class="statusbar" id="statusbar"></footer>
+<dialog id="rrDialog" class="rrdialog" aria-label="선로도 전체 화면">
+	<div class="rrdhead">
+		<strong>선로도</strong>
+		<span class="hint">드래그로 이동, Ctrl+휠로 배율, Esc로 닫기</span>
+		<div class="rrzoom" role="group" aria-label="선로도 배율">
+			<button type="button" class="send" id="rrdOut" aria-label="축소">−</button>
+			<button type="button" class="send" id="rrdPct" aria-label="배율 100%로">100%</button>
+			<button type="button" class="send" id="rrdIn" aria-label="확대">+</button>
+			<button type="button" class="send" id="rrdFit">맞춤</button>
+			<button type="button" class="send" id="rrdClose">닫기</button>
+		</div>
+	</div>
+	<div class="rr" id="rrBig" tabindex="0" aria-label="선로도 (전체 화면)"></div>
+</dialog>
 <script src="<%= gyusik_js %>"></script>
 </body>
 </html>

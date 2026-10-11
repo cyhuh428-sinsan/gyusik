@@ -111,53 +111,53 @@ function paintText() {
 
 // ---------- panels ----------
 
-// ---- railroad diagram: zoom buttons, Ctrl+wheel, fit, drag to pan (the scale is remembered on this device)
+// ---- railroad diagram viewer: zoom buttons, Ctrl+wheel, fit, drag to pan.
+// Used by the workbench tab (scale remembered on this device) and by the full-screen popup.
 const RR_MIN = 0.1, RR_MAX = 2;
-let rrScale = 1;
-try { let z = parseFloat(localStorage.getItem("gyusik.rrzoom")); if (z >= RR_MIN && z <= RR_MAX) { rrScale = z; } } catch (e) {}
 
-function applyRrScale() {
-	let line = $("rr").querySelector(".rr-line");
-	if (line) { line.style.zoom = rrScale; }
-	$("rrPct").textContent = Math.round(rrScale * 100) + "%";
-	$("rrOut").disabled = rrScale <= RR_MIN + 0.001;
-	$("rrIn").disabled = rrScale >= RR_MAX - 0.001;
-}
+function makeViewer(host, ids, storeKey) {
+	let scale = 1;
+	if (storeKey) { try { let z = parseFloat(localStorage.getItem(storeKey)); if (z >= RR_MIN && z <= RR_MAX) { scale = z; } } catch (e) {} }
 
-function setRrScale(z) {
-	rrScale = Math.min(RR_MAX, Math.max(RR_MIN, Math.round(z * 100) / 100));
-	try { localStorage.setItem("gyusik.rrzoom", String(rrScale)); } catch (e) {}
-	applyRrScale();
-}
+	function apply() {
+		let line = host.querySelector(".rr-line");
+		if (line) { line.style.zoom = scale; }
+		$(ids.pct).textContent = Math.round(scale * 100) + "%";
+		$(ids.out).disabled = scale <= RR_MIN + 0.001;
+		$(ids.inn).disabled = scale >= RR_MAX - 0.001;
+	}
+	function set(z) {
+		scale = Math.min(RR_MAX, Math.max(RR_MIN, Math.round(z * 100) / 100));
+		if (storeKey) { try { localStorage.setItem(storeKey, String(scale)); } catch (e) {} }
+		apply();
+	}
+	// the largest scale (at most 100%) at which the whole diagram fits the box
+	function fit() {
+		let line = host.querySelector(".rr-line");
+		if (!line) { return; }
+		line.style.zoom = 1;
+		let cs = getComputedStyle(host);
+		let aw = host.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+		let ah = host.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+		set(Math.min(1, aw / line.scrollWidth, ah / line.scrollHeight));
+	}
 
-// the largest scale (at most 100%) at which the whole diagram fits the box
-function fitRr() {
-	let host = $("rr"), line = host.querySelector(".rr-line");
-	if (!line) { return; }
-	line.style.zoom = 1;
-	let cs = getComputedStyle(host);
-	let aw = host.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
-	let ah = host.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
-	setRrScale(Math.min(1, aw / line.scrollWidth, ah / line.scrollHeight));
-}
-
-$("rrOut").onclick = () => setRrScale(rrScale / 1.2);
-$("rrIn").onclick = () => setRrScale(rrScale * 1.2);
-$("rrPct").onclick = () => setRrScale(1);
-$("rrFit").onclick = fitRr;
-$("rr").addEventListener("wheel", (e) => {
-	if (!e.ctrlKey && !e.metaKey) { return; } // plain wheel keeps scrolling the diagram / the page
-	e.preventDefault();
-	setRrScale(rrScale * (e.deltaY < 0 ? 1.1 : 1 / 1.1));
-}, {passive: false});
-$("rr").addEventListener("keydown", (e) => {
-	if (e.target !== $("rr") || e.ctrlKey || e.metaKey || e.altKey) { return; }
-	if (e.key === "+" || e.key === "=") { setRrScale(rrScale * 1.2); e.preventDefault(); }
-	else if (e.key === "-") { setRrScale(rrScale / 1.2); e.preventDefault(); }
-	else if (e.key === "0") { setRrScale(1); e.preventDefault(); }
-});
-{
-	let host = $("rr"), drag = null;
+	$(ids.out).onclick = () => set(scale / 1.2);
+	$(ids.inn).onclick = () => set(scale * 1.2);
+	$(ids.pct).onclick = () => set(1);
+	$(ids.fit).onclick = fit;
+	host.addEventListener("wheel", (e) => {
+		if (!e.ctrlKey && !e.metaKey) { return; } // plain wheel keeps scrolling the diagram / the page
+		e.preventDefault();
+		set(scale * (e.deltaY < 0 ? 1.1 : 1 / 1.1));
+	}, {passive: false});
+	host.addEventListener("keydown", (e) => {
+		if (e.target !== host || e.ctrlKey || e.metaKey || e.altKey) { return; }
+		if (e.key === "+" || e.key === "=") { set(scale * 1.2); e.preventDefault(); }
+		else if (e.key === "-") { set(scale / 1.2); e.preventDefault(); }
+		else if (e.key === "0") { set(1); e.preventDefault(); }
+	});
+	let drag = null;
 	host.addEventListener("pointerdown", (e) => {
 		if (e.button !== 0 || e.pointerType === "touch") { return; } // touch already scrolls natively
 		drag = {x: e.clientX, y: e.clientY, left: host.scrollLeft, top: host.scrollTop, moved: false};
@@ -174,7 +174,22 @@ $("rr").addEventListener("keydown", (e) => {
 	const stop = () => { drag = null; host.classList.remove("pan"); };
 	window.addEventListener("pointerup", stop);
 	window.addEventListener("pointercancel", stop);
+	return {apply, set, fit};
 }
+
+const rrView = makeViewer($("rr"), {out: "rrOut", pct: "rrPct", inn: "rrIn", fit: "rrFit"}, "gyusik.rrzoom");
+const rrBigView = makeViewer($("rrBig"), {out: "rrdOut", pct: "rrdPct", inn: "rrdIn", fit: "rrdFit"}, null);
+let rrLast = null; // the model the diagram was last drawn for
+
+// full-screen popup (a native <dialog>: Esc closes it, focus stays inside)
+$("rrFull").onclick = () => {
+	if (!rrLast || !rrLast.model.pattern) { return; }
+	$("rrDialog").showModal();
+	renderRailroad($("rrBig"), rrLast.model, rrLast.fm);
+	rrBigView.fit();
+	$("rrBig").focus();
+};
+$("rrdClose").onclick = () => $("rrDialog").close();
 
 function paintFlags() {
 	let host = $("flags");
@@ -290,7 +305,8 @@ function render() {
 	diags = sortDiagnostics(diagnose(model, fm, state.engine));
 	$("summary").textContent = summary(model, fm);
 	renderRailroad($("rr"), model, fm);
-	applyRrScale();
+	rrLast = {model, fm};
+	rrView.apply();
 	paintPattern();
 	paintSide();
 	paintFlags();
