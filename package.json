@@ -9,6 +9,7 @@
     "@babel/core": "^7.9.6",
     "@babel/preset-env": "^7.9.6",
     "@babel/register": "^7.9.0",
+    "@playwright/test": "^1.55.0",
     "browser-sync": "^2.26.7",
     "del": "^4.1.1",
     "gulp": "^4.0.2",
@@ -45,6 +46,7 @@
     "not ie < 10"
   ],
   "scripts": {
-    "test": "node --import ./tests/register.mjs --test \"tests/*.test.mjs\""
+    "test": "node --import ./tests/register.mjs --test \"tests/*.test.mjs\"",
+    "test:e2e": "playwright test"
   }
 }

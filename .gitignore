@@ -40,3 +40,7 @@ server/vendor/
 
 # scratch copies of third-party packages
 docs/*/pcre2-wasm-pkg/
+
+# Playwright
+test-results/
+playwright-report/
