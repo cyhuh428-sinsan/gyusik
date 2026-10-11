@@ -7,7 +7,7 @@ The AI answer is never trusted: it is compiled, scored against the user's exampl
 and run through the same diagnostics as any other pattern before it is shown.
 */
 
-import {PROVIDERS, levelsFor, loadSettings, saveSettings, unavailableReason, listModels, askForRegex, AiError, policy, hasSecureKeyStore, getStoredKey, registerHost} from "./ai.js";
+import {PROVIDERS, levelsFor, loadSettings, saveSettings, unavailableReason, listModels, askForRegex, AiError, policy, hasSecureKeyStore, canKeepKey, getStoredKey, registerHost} from "./ai.js";
 import {analyze, summary} from "./model.js";
 import {diagnose} from "./diagnose.js";
 
@@ -143,9 +143,11 @@ export function initAi(ctx) {
 	window.addEventListener("online", paintNl);
 	window.addEventListener("offline", paintNl);
 
-	if (hasSecureKeyStore) {
-		// installed app: the key is kept encrypted by Windows, not in the browser storage
-		$("setSaveKey").parentElement.querySelector(".hint").textContent = "Windows 사용자 계정에 암호화되어 저장됩니다. 끄면 앱을 닫을 때까지만 기억합니다.";
+	{
+		let hint = $("setSaveKey").parentElement.querySelector(".hint");
+		if (hasSecureKeyStore) { hint.textContent = "Windows 사용자 계정에 암호화되어 저장됩니다. 끄면 앱을 닫을 때까지만 기억합니다."; }
+		else if (canKeepKey) { hint.textContent = "이 브라우저에 암호화해 저장합니다. 같은 브라우저 계정을 쓰는 사람은 이 키를 쓸 수 있으니 공용 PC에서는 끄세요. 끄면 탭을 닫을 때까지만 기억합니다."; }
+		else { hint.textContent = "이 주소(http)에서는 브라우저가 암호화 저장을 지원하지 않아 저장하지 않습니다. https 또는 설치형 앱에서 사용하세요. 이번 탭을 닫을 때까지만 기억합니다."; $("setSaveKey").disabled = true; }
 		getStoredKey().then((k) => { if (k && !s.key) { s.key = k; s.saveKey = true; paintSettings(); paintNl(); } });
 	}
 	if (policy.blockExternal) { $("setBlock").parentElement.querySelector(".hint").textContent = "관리자 정책(" + (window.gyusikHost.info.policy.source || "policy.json") + ")으로 켜져 있어 바꿀 수 없습니다."; }
