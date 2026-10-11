@@ -1,7 +1,7 @@
 /*
 RegExr: Learn, Build, & Test RegEx
 Copyright (C) 2017  gskinner.com, inc.
-Modified for 규식이 (Gyusik) by sinsan-develop, 2026-10-11 (see NOTICE.md).
+Modified for 규식이 (Gyusik) by cyhuh428-sinsan, 2026-10-11 (see NOTICE.md).
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

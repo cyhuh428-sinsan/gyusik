@@ -1,5 +1,5 @@
 /*
-규식이 (Gyusik) - https://github.com/sinsan-develop/regexr
+규식이 (Gyusik) - https://github.com/cyhuh428-sinsan/gyusik
 Based on RegExr, Copyright (C) 2017 gskinner.com, inc. Licensed under GPL-3.0 (see LICENSE, NOTICE.md).
 
 Learn screen (design doc, screen 4): lesson list, explanation with live railroad diagrams,

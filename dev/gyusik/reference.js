@@ -1,5 +1,5 @@
 /*
-규식이 (Gyusik) - https://github.com/sinsan-develop/regexr
+규식이 (Gyusik) - https://github.com/cyhuh428-sinsan/gyusik
 Licensed under GPL-3.0 (see LICENSE, NOTICE.md).
 
 Korean regex reference / cheat sheet, written from scratch for 규식이.

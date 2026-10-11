@@ -1,7 +1,7 @@
 /*
 RegExr: Learn, Build, & Test RegEx
 Copyright (C) 2017  gskinner.com, inc.
-Modified for 규식이 (Gyusik) by sinsan-develop, 2026-10-11 (see NOTICE.md).
+Modified for 규식이 (Gyusik) by cyhuh428-sinsan, 2026-10-11 (see NOTICE.md).
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -84,7 +84,7 @@ home.kids = [
 		label:"About",
 		desc:"규식이 v<%= build_version %> (<%= build_date %>)."+
 			"<p>규식이는 <a href='https://github.com/gskinner/regexr' target='_blank'>RegExr</a>를 바탕으로 만들었습니다. RegExr는 <a href='http://twitter.com/gskinner/' target='_blank'>Grant Skinner</a>와 <a href='http://gskinner.com/' target='_blank'>gskinner</a> 팀이 <a href='http://createjs.com/' target='_blank'>CreateJS</a>와 <a href='http://codemirror.net/' target='_blank'>CodeMirror</a>로 만들었습니다.</p>"+
-			"<p>규식이는 GNU GPL 3.0 라이선스를 따릅니다. 소스 코드와 버그 신고는 <a href='https://github.com/sinsan-develop/regexr' target='_blank'>GitHub</a>에 있습니다.</p>"
+			"<p>규식이는 GNU GPL 3.0 라이선스를 따릅니다. 소스 코드와 버그 신고는 <a href='https://github.com/cyhuh428-sinsan/gyusik' target='_blank'>GitHub</a>에 있습니다.</p>"
 		},
 		{
 		label:"Getting started",
