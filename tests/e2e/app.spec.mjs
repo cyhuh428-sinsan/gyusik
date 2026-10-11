@@ -61,8 +61,9 @@ test("진단: 잘못된 패턴은 오류 배지와 설명을 보여 준다", asy
 	await expect(page.locator("#panel")).toContainText("여는 괄호");
 });
 
+// 입력이 충분히 길어야 어느 엔진에서든 1초 제한을 넘긴다(WebKit은 40자도 0.6초에 끝낸다)
 test("느려지는 패턴은 멈추지 않고 안내한다", async ({page}) => {
-	await open(page, {text: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa!", pattern: "(a+)+$"});
+	await open(page, {text: "a".repeat(60) + "!", pattern: "(a+)+$"});
 	await expect(page.locator("#runError")).toBeVisible({timeout: 15000});
 	// 화면은 계속 반응한다
 	await page.fill("#pattern", "a+");
