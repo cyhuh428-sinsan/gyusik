@@ -294,7 +294,8 @@ input:focus, select:focus, .lines:focus { border-color: var(--accent); outline: 
 .my .pane { min-height: calc(100vh - var(--top) - var(--bar) - 2 * var(--gutter)); align-content: start; }
 .my .toolbar { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
 .my .toolbar #mySearch { flex: 1 1 360px; max-width: 560px; }
-#myList { display: grid; grid-template-columns: repeat(auto-fill, minmax(560px, 1fr)); gap: 16px; align-items: start; }
+.my { grid-template-columns: minmax(0, 1fr); }
+#myList { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(560px, 100%), 1fr)); gap: 16px; align-items: start; }
 #myList .empty { grid-column: 1 / -1; padding: 96px 16px; font-size: 18px; }
 .mycard { border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; display: grid; gap: 10px; }
 .mycard .hd { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: 17px; }
@@ -320,3 +321,11 @@ input:focus, select:focus, .lines:focus { border-color: var(--accent); outline: 
 
 /* make: the input card stays in view while the candidate list scrolls */
 .mk > .pane:first-child { position: sticky; top: calc(var(--top) + var(--gutter)); align-self: start; }
+
+/* narrow screens: the tab rows scroll sideways inside their box instead of pushing the page wider */
+@media (max-width: 700px) {
+	.seg, .tabs { overflow-x: auto; overflow-y: hidden; padding-bottom: 1px; max-width: 100%; scrollbar-width: none; }
+	.seg::-webkit-scrollbar, .tabs::-webkit-scrollbar { display: none; }
+	.segb, .tab { flex: none; padding: 0 14px; }
+	#myList { grid-template-columns: minmax(0, 1fr); }
+}
