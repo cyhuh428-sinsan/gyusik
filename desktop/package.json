@@ -11,7 +11,7 @@
     "prepare-site": "node scripts/prepare-site.cjs",
     "start": "npm run prepare-site && electron .",
     "smoke": "npm run prepare-site && electron . --smoke",
-    "dist": "npm run prepare-site && electron-builder --win --x64"
+    "dist": "npm run prepare-site && electron-builder --win --x64 --arm64"
   },
   "devDependencies": {
     "electron": "44.7.0",
@@ -21,17 +21,52 @@
     "appId": "kr.sinsan.gyusik",
     "productName": "규식이",
     "copyright": "Based on RegExr, Copyright (C) 2017 gskinner.com, inc. GPL-3.0",
-    "directories": { "output": "dist" },
-    "files": ["main.js", "preload.js", "policy.js", "package.json", "site/**/*"],
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "policy.js",
+      "package.json",
+      "site/**/*"
+    ],
     "extraResources": [
-      { "from": "../LICENSE", "to": "LICENSE" },
-      { "from": "../NOTICE.md", "to": "NOTICE.md" },
-      { "from": "SOURCE.txt", "to": "SOURCE.txt" },
-      { "from": "policy.example.json", "to": "policy.example.json" }
+      {
+        "from": "../LICENSE",
+        "to": "LICENSE"
+      },
+      {
+        "from": "../NOTICE.md",
+        "to": "NOTICE.md"
+      },
+      {
+        "from": "SOURCE.txt",
+        "to": "SOURCE.txt"
+      },
+      {
+        "from": "policy.example.json",
+        "to": "policy.example.json"
+      }
     ],
     "asar": true,
     "win": {
-      "target": [{ "target": "nsis", "arch": ["x64"] }, { "target": "zip", "arch": ["x64"] }],
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
       "artifactName": "Gyusik-${version}-${arch}.${ext}",
       "signAndEditExecutable": false
     },
