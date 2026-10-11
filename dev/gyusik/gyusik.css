@@ -24,7 +24,7 @@ Design system. Reference screen: 1920 x 1080.
 	--match: #FFE58A; --ok: #1B7447; --ok-bg: #DCF1E5; --warn: #9A5B00; --warn-bg: #FCEFD5; --bad: #B3261E; --bad-bg: #FBE1DF;
 	--f-body: "Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
 	--f-mono: "D2Coding", "Cascadia Mono", Consolas, "Pretendard", "Malgun Gothic", ui-monospace, monospace;
-	--gutter: 24px; --top: 64px; --bar: 44px;
+	--gutter: 16px; --top: 56px; --bar: 44px;
 	color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
@@ -51,7 +51,7 @@ p { margin: 0; }
 .empty { color: var(--ink-2); padding: 32px 16px; text-align: center; font-size: 16px; }
 
 /* ---------- top bar ---------- */
-.top { position: sticky; top: 0; z-index: 30; height: var(--top); display: flex; align-items: center; gap: 16px; padding: 0 max(var(--gutter), calc((100% - 1800px) / 2 + var(--gutter))); background: var(--surface); border-bottom: 1px solid var(--line); }
+.top { position: sticky; top: 0; z-index: 30; height: var(--top); display: flex; align-items: center; gap: 16px; padding: 0 var(--gutter); background: var(--surface); border-bottom: 1px solid var(--line); }
 .logo { font-size: 24px; font-weight: 800; letter-spacing: -.01em; margin-right: 8px; }
 .modes { display: flex; gap: 4px; }
 .mode { height: 40px; padding: 0 18px; border: 0; border-radius: 8px; background: none; color: var(--ink-2); font-size: 16px; font-weight: 500; }
@@ -96,8 +96,8 @@ input:focus, select:focus, .lines:focus { border-color: var(--accent); outline: 
 .ok { color: var(--ok); } .bad { color: var(--bad); }
 
 /* ---------- page shell: every mode uses it ---------- */
-.wb, .mk, .ln, .my, .st { flex: 1 0 auto; width: 100%; max-width: 1800px; margin: 0 auto; padding: var(--gutter); display: grid; gap: var(--gutter); align-items: start; }
-.pane { display: flex; flex-direction: column; gap: 14px; min-width: 0; padding: 20px 24px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+.wb, .mk, .ln, .my, .st { flex: 1 0 auto; width: 100%; margin: 0; padding: var(--gutter); display: grid; gap: var(--gutter); align-items: start; }
+.pane { display: flex; flex-direction: column; gap: 12px; min-width: 0; padding: 14px 18px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
 .label { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 16px; font-weight: 700; }
 .label .hint { font-weight: 400; }
 .count { margin-left: auto; font-weight: 500; color: var(--ink-2); font-size: 14px; }
@@ -227,7 +227,7 @@ input:focus, select:focus, .lines:focus { border-color: var(--accent); outline: 
 .engbad { font-size: 12px; padding: 1px 8px; border-radius: 999px; background: var(--warn-bg); color: var(--warn); }
 
 /* status bar */
-.statusbar { position: sticky; bottom: 0; z-index: 20; height: var(--bar); display: flex; align-items: center; gap: 28px; flex-wrap: wrap; padding: 0 max(var(--gutter), calc((100% - 1800px) / 2 + var(--gutter))); border-top: 1px solid var(--line); background: var(--surface); font-size: 14px; color: var(--ink-2); }
+.statusbar { position: sticky; bottom: 0; z-index: 20; height: var(--bar); display: flex; align-items: center; gap: 28px; flex-wrap: wrap; padding: 0 var(--gutter); border-top: 1px solid var(--line); background: var(--surface); font-size: 14px; color: var(--ink-2); }
 .statusbar b { color: var(--ink); font-weight: 600; }
 .statusbar b.ok { color: var(--ok); } .statusbar b.bad { color: var(--bad); }
 
