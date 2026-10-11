@@ -44,13 +44,14 @@ export function initLearn(ctx) {
 	function show() {
 		let l = LESSONS[prog.cur];
 		paintNav();
-		let h = "<span class=\"label\">" + (prog.cur + 1) + "강 · " + esc(l.term) + "</span><h2>" + esc(l.title) + "</h2>" + l.body.join("");
+		let head = "<div class=\"lnhead\"><span class=\"label\">" + (prog.cur + 1) + "강 · " + esc(l.term) + "</span><h2>" + esc(l.title) + "</h2></div>";
+		let h = l.body.join("");
 		h += "<div class=\"lnex\">" + l.examples.map((e, k) => "<div class=\"lnexbox\"><div class=\"lnexhd\"><code>" + esc(e.pattern) + "</code><span class=\"muted\">" + esc(e.note) + "</span></div><div class=\"rr\" data-ex=\"" + k + "\"></div></div>").join("") + "</div>";
-		h += l.tasks.map((t, k) => "<div class=\"task\" data-id=\"" + t.id + "\"><div class=\"label\">실습 " + (k + 1) + "/" + l.tasks.length + " <span class=\"taskdone\" hidden>✓ 통과</span></div><p>" + t.prompt + "</p>" +
+		let tasks = l.tasks.map((t, k) => "<div class=\"task\" data-id=\"" + t.id + "\"><div class=\"label\">실습 " + (k + 1) + "/" + l.tasks.length + " <span class=\"taskdone\" hidden>✓ 통과</span></div><p>" + t.prompt + "</p>" +
 			"<input type=\"text\" class=\"tin\" spellcheck=\"false\" autocomplete=\"off\" aria-label=\"패턴 입력\" placeholder=\"여기에 정규식을 쓰세요\"><table class=\"tcases\"></table>" +
 			"<div class=\"fieldrow\"><button type=\"button\" class=\"send hintbtn\">힌트</button><button type=\"button\" class=\"send solbtn\" hidden>정답 보기</button><button type=\"button\" class=\"send openbtn\">작업대에서 열기</button></div><p class=\"hinttext muted\" hidden></p></div>").join("");
-		h += "<div class=\"lnfoot\">" + (prog.cur < LESSONS.length - 1 ? "<button type=\"button\" class=\"primary\" id=\"lnNext\">다음 강의: " + esc(LESSONS[prog.cur + 1].title) + "</button>" : "<button type=\"button\" class=\"primary\" id=\"lnBench\">작업대에서 직접 써 보기</button>") + "<span class=\"muted\">" + l.next + "</span></div>";
-		$("lnBody").innerHTML = h;
+		tasks += "<div class=\"lnfoot\">" + (prog.cur < LESSONS.length - 1 ? "<button type=\"button\" class=\"primary\" id=\"lnNext\">다음 강의: " + esc(LESSONS[prog.cur + 1].title) + "</button>" : "<button type=\"button\" class=\"primary\" id=\"lnBench\">작업대에서 직접 써 보기</button>") + "<span class=\"muted\">" + l.next + "</span></div>";
+		$("lnBody").innerHTML = head + "<div class=\"lncols\"><div class=\"lntext\">" + h + "</div><div class=\"lntasks\">" + tasks + "</div></div>";
 		$("lnBody").scrollTop = 0;
 		window.scrollTo(0, 0);
 		l.examples.forEach((e, k) => renderRailroad($("lnBody").querySelector("[data-ex=\"" + k + "\"]"), analyze(e.pattern, "", "js"), {}));
