@@ -12,7 +12,7 @@
 - `LICENCE.PCRE2.md`: BSD-3-Clause WITH PCRE2-exception, the PCRE2 library compiled into `libpcre2.wasm`
   (text taken from https://github.com/PCRE2Project/pcre2 on 2026-10-11).
 
-## 규식이 changes (sinsan-develop, 2026-10-11)
+## 규식이 changes (cyhuh428-sinsan, 2026-10-11)
 
 - `libpcre2.js`: the wasm URL is resolved against the worker script's directory instead of the
   hard-coded `http://localhost:3000/libpcre2.wasm`; the Node `fs`/`path` imports are stubbed;

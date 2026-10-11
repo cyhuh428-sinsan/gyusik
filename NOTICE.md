@@ -3,7 +3,7 @@
 규식이 (Gyusik)
 
 - Original work: RegExr, Copyright (C) 2017 gskinner.com, inc. — https://github.com/gskinner/regexr
-- Modifications: Copyright (C) 2026 sinsan-develop — https://github.com/sinsan-develop/regexr
+- Modifications: Copyright (C) 2026 cyhuh428-sinsan — https://github.com/cyhuh428-sinsan/gyusik
 
 This program is free software: you can redistribute it and/or modify it under the terms of the
 GNU General Public License as published by the Free Software Foundation, either version 3 of the
@@ -21,7 +21,7 @@ modified version and is not affiliated with or endorsed by gskinner.com, inc.
 
 ## 수정 내역 (Modifications)
 
-수정한 소스 파일에는 머리 주석에 `Modified for 규식이 (Gyusik) by sinsan-develop, <날짜>` 줄을 넣습니다.
+수정한 소스 파일에는 머리 주석에 `Modified for 규식이 (Gyusik) by cyhuh428-sinsan, <날짜>` 줄을 넣습니다.
 
 ### 2026-10-11
 
