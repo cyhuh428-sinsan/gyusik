@@ -29,7 +29,9 @@ export const LEVELS = [
 	{id: "max", ko: "최고", protocols: ["anthropic"]}
 ];
 
-const SETTINGS_KEY = "gyusik.ai", KEY_KEY = "gyusik.ai.key";
+import {vaultAvailable, sealKey, openKey, forgetKey} from "./keyvault.js";
+
+const SETTINGS_KEY = "gyusik.ai";
 
 // Inside the installed (Electron) app the preload script provides window.gyusikHost: the administrator
 // policy, and key storage encrypted with the Windows credential store. In a browser both are absent.
@@ -43,7 +45,8 @@ export function registerHost(s) {
 	try { h = new URL(s.base).host; } catch (e) {}
 	host.allowHost(h);
 }
-export const getStoredKey = () => (hasSecureKeyStore ? host.getKey() : Promise.resolve(""));
+export const getStoredKey = () => (hasSecureKeyStore ? host.getKey() : openKey());
+export const canKeepKey = hasSecureKeyStore || vaultAvailable;
 const DEFAULTS = {provider: "claude", protocol: "anthropic", base: "https://api.anthropic.com", model: "claude-sonnet-5-5", effort: "", saveKey: false, block: false};
 let sessionKey = "";
 
@@ -51,9 +54,7 @@ export function loadSettings() {
 	let s = {};
 	try { s = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}") || {}; } catch (e) {}
 	s = Object.assign({}, DEFAULTS, s);
-	let key = sessionKey;
-	if (!hasSecureKeyStore) { try { key = key || localStorage.getItem(KEY_KEY) || ""; } catch (e) {} }
-	s.key = key;
+	s.key = sessionKey;
 	if (policy.blockExternal) { s.block = true; } // the administrator's switch cannot be turned off by the user
 	return s;
 }
@@ -65,8 +66,9 @@ export function saveSettings(s) {
 	registerHost(s);
 	try {
 		localStorage.setItem(SETTINGS_KEY, JSON.stringify(copy));
-		if (hasSecureKeyStore) { host.setKey(s.saveKey ? s.key : ""); localStorage.removeItem(KEY_KEY); }
-		else if (s.saveKey && s.key) { localStorage.setItem(KEY_KEY, s.key); } else { localStorage.removeItem(KEY_KEY); }
+		if (hasSecureKeyStore) { host.setKey(s.saveKey ? s.key : ""); }
+		else if (s.saveKey && s.key && vaultAvailable) { sealKey(s.key).catch(forgetKey); }
+		else { forgetKey(); }
 	} catch (e) {}
 }
 
