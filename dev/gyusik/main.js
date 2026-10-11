@@ -111,6 +111,91 @@ function paintText() {
 
 // ---------- panels ----------
 
+// ---- railroad diagram viewer: zoom buttons, Ctrl+wheel, fit, drag to pan.
+// Used by the workbench tab (scale remembered on this device) and by the full-screen popup.
+const RR_MIN = 0.1, RR_MAX = 2;
+
+function makeViewer(host, ids, storeKey) {
+	let scale = 1;
+	if (storeKey) { try { let z = parseFloat(localStorage.getItem(storeKey)); if (z >= RR_MIN && z <= RR_MAX) { scale = z; } } catch (e) {} }
+
+	function apply() {
+		let line = host.querySelector(".rr-line");
+		if (line) { line.style.zoom = scale; }
+		$(ids.pct).textContent = Math.round(scale * 100) + "%";
+		$(ids.out).disabled = scale <= RR_MIN + 0.001;
+		$(ids.inn).disabled = scale >= RR_MAX - 0.001;
+	}
+	function set(z) {
+		scale = Math.min(RR_MAX, Math.max(RR_MIN, Math.round(z * 100) / 100));
+		if (storeKey) { try { localStorage.setItem(storeKey, String(scale)); } catch (e) {} }
+		apply();
+	}
+	// the largest scale (at most 100%) at which the whole diagram fits the box
+	function fit() {
+		let line = host.querySelector(".rr-line");
+		if (!line) { return; }
+		line.style.zoom = 1;
+		let cs = getComputedStyle(host);
+		let aw = host.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+		let ah = host.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+		set(Math.min(1, aw / line.scrollWidth, ah / line.scrollHeight));
+		// the estimate ignores things that stick out of the line box (group labels) and differs between browsers:
+		// measure what is really left to scroll and shrink a little more until nothing scrolls
+		for (let i = 0; i < 8 && scale > RR_MIN + 0.001 && (host.scrollHeight > host.clientHeight + 1 || host.scrollWidth > host.clientWidth + 1); i++) {
+			set(scale * 0.97 * Math.min(host.clientHeight / host.scrollHeight, host.clientWidth / host.scrollWidth));
+		}
+	}
+
+	$(ids.out).onclick = () => set(scale / 1.2);
+	$(ids.inn).onclick = () => set(scale * 1.2);
+	$(ids.pct).onclick = () => set(1);
+	$(ids.fit).onclick = fit;
+	host.addEventListener("wheel", (e) => {
+		if (!e.ctrlKey && !e.metaKey) { return; } // plain wheel keeps scrolling the diagram / the page
+		e.preventDefault();
+		set(scale * (e.deltaY < 0 ? 1.1 : 1 / 1.1));
+	}, {passive: false});
+	host.addEventListener("keydown", (e) => {
+		if (e.target !== host || e.ctrlKey || e.metaKey || e.altKey) { return; }
+		if (e.key === "+" || e.key === "=") { set(scale * 1.2); e.preventDefault(); }
+		else if (e.key === "-") { set(scale / 1.2); e.preventDefault(); }
+		else if (e.key === "0") { set(1); e.preventDefault(); }
+	});
+	let drag = null;
+	host.addEventListener("pointerdown", (e) => {
+		if (e.button !== 0 || e.pointerType === "touch") { return; } // touch already scrolls natively
+		drag = {x: e.clientX, y: e.clientY, left: host.scrollLeft, top: host.scrollTop, moved: false};
+	});
+	window.addEventListener("pointermove", (e) => {
+		if (!drag) { return; }
+		let dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+		if (!drag.moved && Math.abs(dx) + Math.abs(dy) < 4) { return; }
+		drag.moved = true;
+		host.classList.add("pan");
+		host.scrollLeft = drag.left - dx;
+		host.scrollTop = drag.top - dy;
+	});
+	const stop = () => { drag = null; host.classList.remove("pan"); };
+	window.addEventListener("pointerup", stop);
+	window.addEventListener("pointercancel", stop);
+	return {apply, set, fit};
+}
+
+const rrView = makeViewer($("rr"), {out: "rrOut", pct: "rrPct", inn: "rrIn", fit: "rrFit"}, "gyusik.rrzoom");
+const rrBigView = makeViewer($("rrBig"), {out: "rrdOut", pct: "rrdPct", inn: "rrdIn", fit: "rrdFit"}, null);
+let rrLast = null; // the model the diagram was last drawn for
+
+// full-screen popup (a native <dialog>: Esc closes it, focus stays inside)
+$("rrFull").onclick = () => {
+	if (!rrLast || !rrLast.model.pattern) { return; }
+	$("rrDialog").showModal();
+	renderRailroad($("rrBig"), rrLast.model, rrLast.fm);
+	rrBigView.fit();
+	$("rrBig").focus();
+};
+$("rrdClose").onclick = () => $("rrDialog").close();
+
 function paintFlags() {
 	let host = $("flags");
 	host.textContent = "";
@@ -225,6 +310,8 @@ function render() {
 	diags = sortDiagnostics(diagnose(model, fm, state.engine));
 	$("summary").textContent = summary(model, fm);
 	renderRailroad($("rr"), model, fm);
+	rrLast = {model, fm};
+	rrView.apply();
 	paintPattern();
 	paintSide();
 	paintFlags();
@@ -370,6 +457,7 @@ $("toolCopy").onclick = () => {
 
 function showView(v) {
 	state.view = v;
+	$("viewRr").hidden = v !== "rr";
 	$("viewText").hidden = v !== "text";
 	$("viewTests").hidden = v !== "tests";
 	$("viewTool").hidden = !(v === "replace" || v === "list");

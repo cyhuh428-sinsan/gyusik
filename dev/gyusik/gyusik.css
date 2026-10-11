@@ -121,6 +121,8 @@ input:focus, select:focus, .lines:focus { border-color: var(--accent); outline: 
 .editor.text .mirror { min-height: 260px; flex: 1; }
 .editor.text textarea { overflow: auto; }
 #viewText { flex: 1; display: flex; flex-direction: column; }
+#viewRr { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 12px; }
+#viewRr[hidden] { display: none; }
 .mirror .anc { color: var(--accent); font-weight: 700; }
 .mirror .q { color: var(--ink-2); }
 .mirror .err { text-decoration: underline wavy var(--bad); text-underline-offset: 4px; }
@@ -147,8 +149,22 @@ input:focus, select:focus, .lines:focus { border-color: var(--accent); outline: 
 .saverow #saveName { width: 176px; } .saverow #saveTags { width: 148px; } .saverow input { height: 36px; }
 
 /* railroad */
-.rr { overflow-x: auto; padding: 18px 4px 8px; min-height: 110px; }
-.lnex .rr { min-height: 0; }
+.rrhead { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.rrzoom { display: flex; gap: 6px; }
+.rrzoom .send { height: 32px; min-width: 36px; padding: 0 10px; font-size: 15px; }
+.rrzoom #rrPct { min-width: 60px; font-variant-numeric: tabular-nums; }
+/* fixed-size viewport: the box never grows or shrinks with the pattern; big diagrams scroll, pan or zoom inside it */
+.rr { display: flex; box-sizing: border-box; flex: 1; min-height: 0; overflow: auto; padding: 18px 4px 8px; cursor: grab; overscroll-behavior: contain; }
+.rr > .rr-line { margin: auto; }
+.rr.pan { cursor: grabbing; user-select: none; }
+.rrdialog { width: 100vw; height: 100vh; max-width: none; max-height: none; margin: 0; padding: var(--gutter); border: 0; background: var(--bg); color: var(--ink); }
+.rrdialog[open] { display: flex; flex-direction: column; gap: 12px; }
+.rrdialog::backdrop { background: rgba(0, 0, 0, .6); }
+.rrdhead { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 18px; }
+.rrdhead .rrzoom { margin-left: auto; }
+.rrdialog .rr { flex: 1; min-height: 0; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.lnex .rr { display: block; height: auto; overflow-x: auto; overflow-y: hidden; cursor: auto; }
+.lnex .rr > .rr-line { margin: 0; }
 .rr .empty { padding: 24px 0; text-align: left; }
 .rr-line, .rr-seq { display: inline-flex; align-items: center; }
 .rr-line { min-width: min-content; }
@@ -266,7 +282,7 @@ input:focus, select:focus, .lines:focus { border-color: var(--accent); outline: 
 .lnhead h2 { margin: 0; font-size: 30px; line-height: 1.3; letter-spacing: -.01em; }
 .lncols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(460px, 600px); gap: 40px; align-items: start; }
 .lntext, .lntasks { display: grid; gap: 20px; min-width: 0; align-content: start; }
-.lntasks { position: sticky; top: calc(var(--top) + var(--gutter)); }
+.lntasks { position: static; }
 .lntext p, .lntext ul { font-size: 17px; line-height: 1.8; max-width: 72ch; }
 .lntext ul { margin: 0; padding-left: 22px; display: grid; gap: 4px; }
 .lnex { display: grid; gap: 12px; }
@@ -291,7 +307,7 @@ input:focus, select:focus, .lines:focus { border-color: var(--accent); outline: 
 
 /* ---------- my patterns ---------- */
 .my { grid-template-columns: minmax(0, 1fr); }
-.my .pane { min-height: calc(100vh - var(--top) - var(--bar) - 2 * var(--gutter)); align-content: start; }
+.my .pane { height: calc(100vh - var(--top) - var(--bar) - 2 * var(--gutter)); overflow: hidden; }
 .my .toolbar { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
 .my .toolbar #mySearch { flex: 1 1 360px; max-width: 560px; }
 .my { grid-template-columns: minmax(0, 1fr); }
@@ -304,6 +320,30 @@ input:focus, select:focus, .lines:focus { border-color: var(--accent); outline: 
 .mycard .acts { display: flex; gap: 8px; flex-wrap: wrap; }
 .tag { font-size: 13px; background: var(--accent-soft); color: var(--accent); border-radius: 999px; padding: 1px 10px; font-weight: 600; }
 
+/* ---------- fixed-size working areas: the page does not grow with the content, the content scrolls inside ---------- */
+.mk > .pane { align-self: start; height: calc(100vh - var(--top) - var(--bar) - 2 * var(--gutter)); overflow: hidden; }
+.mk > .pane:first-child { overflow: auto; }
+#mkList { flex: 1 1 0; min-height: 0; overflow: auto; padding-right: 4px; }
+#mkList > .cand { flex: none; }
+#myList { flex: 1 1 0; min-height: 0; overflow: auto; align-content: start; padding-right: 4px; }
+.lnnav, .lnbody { align-self: start; height: calc(100vh - var(--top) - var(--bar) - 2 * var(--gutter)); overflow: auto; overscroll-behavior: contain; }
+
+/* ---------- desktop: the screen itself is fixed; every area shrinks to fit and scrolls inside ---------- */
+@media (min-width: 1101px) and (min-height: 560px) {
+	html { scrollbar-gutter: auto; }
+	html, body { height: 100%; overflow: hidden; }
+	.wb, .mk, .ln, .my, .st { flex: 1 1 0; min-height: 0; overflow: hidden; }
+	.wb { grid-template-rows: minmax(0, 1fr); align-items: stretch; }
+	.left { min-height: 0; height: 100%; }
+	.pane.grow { min-height: 0; overflow: hidden; }
+	#viewText, #viewTests, #viewTool, #viewRr { min-height: 0; }
+	#tests { flex: 1; min-height: 0; overflow: auto; }
+	.toolout { min-height: 0; }
+	.side { position: static; height: 100%; min-height: 0; }
+	.st { align-items: start; }
+	.st > .pane { max-height: 100%; overflow: auto; }
+}
+
 /* ---------- narrower windows ---------- */
 @media (max-width: 1500px) {
 	.wb { grid-template-columns: minmax(0, 1fr) 440px; }
@@ -315,12 +355,16 @@ input:focus, select:focus, .lines:focus { border-color: var(--accent); outline: 
 	.wb, .mk, .ln, .st { grid-template-columns: minmax(0, 1fr); }
 	.side { position: static; height: 560px; }
 	.lnnav { position: static; }
+	.mk > .pane, .mk > .pane:first-child { height: auto; overflow: visible; }
+	#mkList, #myList { overflow: visible; }
+	.my .pane { height: auto; overflow: visible; }
+	.lnnav, .lnbody { height: auto; overflow: visible; }
 	.top { flex-wrap: wrap; height: auto; padding: 12px var(--gutter); }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 
-/* make: the input card stays in view while the candidate list scrolls */
-.mk > .pane:first-child { position: sticky; top: calc(var(--top) + var(--gutter)); align-self: start; }
+/* make: both panes share one fixed height (see the fixed-size section); this keeps the input card at the top */
+.mk > .pane:first-child { align-self: start; }
 
 /* narrow screens: the tab rows scroll sideways inside their box instead of pushing the page wider */
 @media (max-width: 700px) {
