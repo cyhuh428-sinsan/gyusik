@@ -1,6 +1,6 @@
 # 웹 배포 (gyusik.sinsan.kr)
 
-정적 사이트를 nginx 컨테이너로 띄웁니다. 호스트 포트는 열지 않고, 앞단의 Nginx Proxy Manager가 `proxy-network`를 통해 컨테이너(`gyusik-site:80`)에 연결합니다. 같은 서버의 `nownote` 사이트와 같은 방식입니다.
+정적 사이트를 nginx 컨테이너로 띄웁니다. 호스트 포트는 열지 않고, 앞단의 Nginx Proxy Manager가 `proxy-network`를 통해 컨테이너(`gyusik-site:3350`)에 연결합니다. 같은 서버의 `nownote` 사이트와 같은 방식입니다.
 
 ## 만드는 법
 
@@ -24,7 +24,7 @@ cd ~/deploy/regexr && docker compose up -d --build
 
 ## 프록시 설정 (Nginx Proxy Manager, 서버의 :81 관리 화면)
 
-- Proxy Host 추가: 도메인 `gyusik.sinsan.kr`, 대상 `http` · `gyusik-site` · 포트 `80`
+- Proxy Host 추가: 도메인 `gyusik.sinsan.kr`, 대상 `http` · `gyusik-site` · 포트 `3350`
 - SSL 탭: 새 인증서(Let's Encrypt) 요청, Force SSL 켜기
 - Websocket은 필요 없습니다.
 
