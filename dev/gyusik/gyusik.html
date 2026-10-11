@@ -39,8 +39,10 @@
 				<pre class="mirror" id="patMirror" aria-hidden="true"></pre>
 				<textarea id="pattern" spellcheck="false" autocomplete="off" autocapitalize="off" rows="1" aria-label="정규식 패턴"></textarea>
 			</div>
-			<div class="flags" id="flags" role="group" aria-label="플래그"></div>
+
 			<div class="summary" id="summary" aria-live="polite"></div>
+			<div class="toolrow">
+			<div class="flags" id="flags" role="group" aria-label="플래그"></div>
 			<div class="saverow">
 				<input id="saveName" type="text" placeholder="이름 (예: 휴대폰 번호)" aria-label="저장할 이름" maxlength="100">
 				<input id="saveTags" type="text" placeholder="태그 (쉼표로 구분)" aria-label="태그">
@@ -48,12 +50,13 @@
 				<button id="saveNew" type="button" class="send" hidden>새로 저장</button>
 				<span id="saveMsg" class="muted" aria-live="polite"></span>
 			</div>
+			</div>
 		</div>
 		<div class="pane">
 			<div class="label">선로도 <span class="hint">구조를 그림으로 보여줍니다. 마우스를 올리면 패턴·설명·결과가 함께 강조됩니다.</span></div>
 			<div class="rr" id="rr"></div>
 		</div>
-		<div class="pane">
+		<div class="pane grow">
 			<div class="label">
 				<span class="seg" role="tablist" aria-label="테스트 방식">
 					<button class="segb on" type="button" role="tab" data-view="text">테스트 텍스트</button>
@@ -135,7 +138,7 @@
 <main class="my" id="myView" hidden>
 	<section class="pane">
 		<div class="label">내 패턴 <span class="count" id="myCount"></span></div>
-		<div class="fieldrow">
+		<div class="toolbar">
 			<input id="mySearch" type="search" placeholder="이름, 태그, 패턴으로 검색" aria-label="검색">
 			<button type="button" class="send" id="myExport">모두 내보내기</button>
 			<button type="button" class="send" id="myImport">가져오기</button>

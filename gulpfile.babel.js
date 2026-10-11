@@ -154,7 +154,8 @@ gulp.task("gyusik-html", () => {
 		.pipe(gulp.dest("./deploy/"))
 		.pipe(browser.stream());
 });
-gulp.task("gyusik-static", gulp.parallel("gyusik-css", "gyusik-html"));
+gulp.task("gyusik-fonts", () => gulp.src("./dev/gyusik/fonts/*").pipe(gulp.dest("./deploy/fonts/")));
+gulp.task("gyusik-static", gulp.parallel("gyusik-css", "gyusik-html", "gyusik-fonts"));
 gulp.task("gyusik", gulp.parallel("gyusik-js", "gyusik-static"));
 
 // the worker fetches libpcre2.wasm from its own directory.
