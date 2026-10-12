@@ -16,7 +16,8 @@
   },
   "devDependencies": {
     "electron": "44.7.0",
-    "electron-builder": "26.15.3"
+    "electron-builder": "26.15.3",
+    "rcedit": "^5.0.2"
   },
   "build": {
     "appId": "kr.sinsan.gyusik",
@@ -30,7 +31,8 @@
       "preload.js",
       "policy.js",
       "package.json",
-      "site/**/*"
+      "site/**/*",
+      "icons/icon.png"
     ],
     "extraResources": [
       {
@@ -75,7 +77,8 @@
         }
       ],
       "artifactName": "Gyusik-${version}-${arch}.${ext}",
-      "signAndEditExecutable": false
+      "signAndEditExecutable": false,
+      "icon": "icons/icon.ico"
     },
     "nsis": {
       "oneClick": true,
@@ -88,6 +91,7 @@
     },
     "portable": {
       "artifactName": "Gyusik-${version}-x64-portable.${ext}"
-    }
+    },
+    "afterPack": "scripts/after-pack.cjs"
   }
 }

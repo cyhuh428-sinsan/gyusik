@@ -12,7 +12,7 @@
 - 지금 되는 것: JavaScript와 PCRE2 엔진(둘 다 브라우저 안에서 실행)으로 실시간 매칭, 하이라이트, 테스트, 도구(Replace·List·Details·Explain), 레퍼런스, 치트시트
 - 외부로 나가는 요청이 없습니다. 분석 도구, 광고, 웹 글꼴, regexr.com 서버 호출을 모두 제거했습니다.
 - 폐쇄망용 Windows 설치형: `desktop/` (아래 참조)
-- 준비 중인 것: 규식이 중계 서버, 단계 실행 디버거, Python 엔진, 앱 아이콘
+- 준비 중인 것: 규식이 중계 서버, 단계 실행 디버거, Python 엔진
 
 PCRE2는 WebAssembly(`libpcre2.wasm`)로 별도 작업자에서 실행됩니다. 배포할 때 `pcre-worker.js`와 `libpcre2.wasm`이 같은 폴더에 있어야 합니다(빌드가 알아서 넣습니다).
 

@@ -25,6 +25,18 @@ test("처음 열면 오류 없이 뜬다 (콘솔 오류 0, 외부 요청 0)", as
 	expect(external).toEqual([]);
 });
 
+test("규식이 아이콘(favicon)이 연결되어 있고 실제로 내려받아진다", async ({page, request}) => {
+	await page.goto("/");
+	const hrefs = await page.locator("link[rel~=icon], link[rel=apple-touch-icon]").evaluateAll((els) => els.map((e) => e.getAttribute("href")));
+	expect(hrefs.length).toBeGreaterThanOrEqual(3);
+	for (const h of hrefs) {
+		expect(h.startsWith("deploy/icons/")).toBe(true); // RegExr 원본 아이콘(assets/icons)이 아니라 규식이 아이콘
+		const r = await request.get("/" + h);
+		expect(r.status(), h).toBe(200);
+		expect((await r.body()).length, h).toBeGreaterThan(200);
+	}
+});
+
 test("패턴을 쓰면 한 줄 요약, 선로도, 일치 개수가 함께 갱신된다", async ({page}) => {
 	await open(page, {pattern: "^(010)-(\\d{4})-(\\d{4})$"});
 	// 기본 플래그(g, m)로 두 줄이 일치한다
@@ -61,9 +73,10 @@ test("진단: 잘못된 패턴은 오류 배지와 설명을 보여 준다", asy
 	await expect(page.locator("#panel")).toContainText("여는 괄호");
 });
 
-// 입력이 충분히 길어야 어느 엔진에서든 1초 제한을 넘긴다(WebKit은 40자도 0.6초에 끝낸다)
+// 엔진마다 파괴적인 패턴을 다루는 방식이 다르다: WebKit(JSC)은 (a+)+$ 같은 패턴을 입력과 무관하게 약 0.5초에 "일치 없음"으로 끊어
+// 1초 제한에 걸리지 않는다. 아래 패턴은 Chromium(V8)과 WebKit 모두에서 제한 시간을 넘긴다.
 test("느려지는 패턴은 멈추지 않고 안내한다", async ({page}) => {
-	await open(page, {text: "a".repeat(60) + "!", pattern: "(a+)+$"});
+	await open(page, {text: "a".repeat(50) + "!", pattern: "^(([a-z])+.)+[A-Z]([a-z])+$"});
 	await expect(page.locator("#runError")).toBeVisible({timeout: 15000});
 	// 화면은 계속 반응한다
 	await page.fill("#pattern", "a+");

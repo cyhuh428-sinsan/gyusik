@@ -68,6 +68,6 @@ npm run smoke                   # 앱을 창 없이 실행해 자동 점검 (JSO
 
 ## 알려진 한계
 
-- 앱 아이콘은 아직 기본 Electron 아이콘입니다.
+- 앱 아이콘은 규식이 아이콘(갈라지는 선로 모양)입니다. 원본은 `desktop/icons/icon.svg`이고 `node tools/make-icons.cjs`로 모든 크기(ICO, PNG, 웹 favicon)를 다시 만듭니다.
 - 설치 파일을 실제로 실행해 설치해 보는 시험은 하지 않았습니다. 패키징된 앱(`dist/win-unpacked/규식이.exe`)은 `--smoke` 점검을 통과했습니다.
 - Windows 10 이상 64비트(x64)와 ARM64용입니다. **32비트(x86) Windows는 지원하지 않습니다.** Electron 44부터 32비트 빌드가 제공되지 않으며, 32비트를 위해 이전 버전(43)에 머물지 않기로 했습니다.
