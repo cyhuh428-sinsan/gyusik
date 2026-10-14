@@ -120,7 +120,7 @@ function setupIpc() {
 
 function createWindow() {
 	win = new BrowserWindow({
-		width: 1280, height: 860, minWidth: 720, minHeight: 520, show: false, title: "규식이", backgroundColor: "#101319",
+		width: 1280, height: 860, minWidth: 720, minHeight: 520, show: false, title: "규식이", icon: path.join(__dirname, "icons", "icon.png"), backgroundColor: "#101319",
 		webPreferences: {preload: path.join(__dirname, "preload.js"), contextIsolation: true, sandbox: true, nodeIntegration: false, webSecurity: true, devTools: !app.isPackaged || SMOKE}
 	});
 	win.once("ready-to-show", () => { if (!SMOKE) { win.show(); } });
